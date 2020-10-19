@@ -110,7 +110,7 @@ class FormTwoChart extends Component {
                 
                 this.updateGraph()
             }                  
-            });           
+            });          
             
     }
 
@@ -257,78 +257,78 @@ class FormTwoChart extends Component {
 
     onChartClick = (...rest) => {
 
-        if (typeof(rest[0].target) !== 'undefined'){
-            let cutoff = this.getCutoffByIndex(rest[0].target.dataIndex)        
+        // if (typeof(rest[0].target) !== 'undefined'){
+        //     let cutoff = this.getCutoffByIndex(rest[0].target.dataIndex)        
 
-            //Фильтр
-            let filteredResults = this.voteResults.filter(function(result) {
-                return result.form2_percent < cutoff;
-            });
+        //     //Фильтр
+        //     let filteredResults = this.voteResults.filter(function(result) {
+        //         return result.form2_percent < cutoff;
+        //     });
 
-            let resultsSummary = {}
-            let resultsSummaryDistricts = {}
+        //     let resultsSummary = {}
+        //     let resultsSummaryDistricts = {}
 
-            //Для графика распределения
-            filteredResults.forEach(result => {
-                Object.keys(result).map((key) => {
+        //     //Для графика распределения
+        //     filteredResults.forEach(result => {
+        //         Object.keys(result).map((key) => {
 
-                    if (resultsSummary.hasOwnProperty(key)){
-                        resultsSummary[key] += result[key]
-                    }else{
-                        resultsSummary[key] = result[key]
-                    }            
-                })  
+        //             if (resultsSummary.hasOwnProperty(key)){
+        //                 resultsSummary[key] += result[key]
+        //             }else{
+        //                 resultsSummary[key] = result[key]
+        //             }            
+        //         })  
 
-            })         
+        //     })         
 
-            // console.log(filteredResults)
+        //     // console.log(filteredResults)
 
-            //Для карты районов
-            Object.entries(districts).forEach(([key, value]) => {
+        //     //Для карты районов
+        //     Object.entries(districts).forEach(([key, value]) => {
 
-                let partySum = {}
+        //         let partySum = {}
 
-                // console.log('FILTER')
+        //         // console.log('FILTER')
 
-                // console.log(key)
-                // console.log(value)
+        //         // console.log(key)
+        //         // console.log(value)
 
-                let filteredDistrict = filteredResults.filter(function(result) {                    
-                    return result.level_one == value;
-                });
+        //         let filteredDistrict = filteredResults.filter(function(result) {                    
+        //             return result.level_one == value;
+        //         });
 
-                //Суммируем по партиями
-                filteredDistrict.forEach(result => {
-                    Object.keys(result).map((keyFiltered) => {
+        //         //Суммируем по партиями
+        //         filteredDistrict.forEach(result => {
+        //             Object.keys(result).map((keyFiltered) => {
     
-                        if(keyFiltered !== 'form2_percent' && keyFiltered !== 'level_one'){
-                          if (partySum.hasOwnProperty(keyFiltered)){
-                              partySum[keyFiltered] += result[keyFiltered]
-                          }else{
-                              partySum[keyFiltered] = result[keyFiltered]
-                          }          
-                        }  
-                    })      
-                })     
+        //                 if(keyFiltered !== 'form2_percent' && keyFiltered !== 'level_one'){
+        //                   if (partySum.hasOwnProperty(keyFiltered)){
+        //                       partySum[keyFiltered] += result[keyFiltered]
+        //                   }else{
+        //                       partySum[keyFiltered] = result[keyFiltered]
+        //                   }          
+        //                 }  
+        //             })      
+        //         })     
 
-                // console.log('FILTER RESULTS')
-                // console.log(partySum)
-                // console.log(filteredDistrict)
+        //         // console.log('FILTER RESULTS')
+        //         // console.log(partySum)
+        //         // console.log(filteredDistrict)
 
-                resultsSummaryDistricts[key] = partySum
+        //         resultsSummaryDistricts[key] = partySum
 
-            })
+        //     })
 
 
-            console.log('RESULT SUMMARY')
-            console.log(resultsSummary)
-            console.log(resultsSummaryDistricts)
+        //     console.log('RESULT SUMMARY')
+        //     console.log(resultsSummary)
+        //     console.log(resultsSummaryDistricts)
 
-            this.props.clickOnBar(resultsSummary, resultsSummaryDistricts)
+        //     this.props.clickOnBar(resultsSummary, resultsSummaryDistricts)
 
-            //Потом покрасить
-            this.updateGraph(rest[0].target.dataIndex) 
-        }
+        //     //Потом покрасить
+        //     this.updateGraph(rest[0].target.dataIndex) 
+        // }
 
         
     };

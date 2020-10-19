@@ -24,7 +24,10 @@ import * as d3 from 'd3'
 import Map from './RegionsMap'
 import ReactTooltip from "react-tooltip";
 
-import {districts} from '../util/districtsMatching'
+import {districts, matchDistrictShow, matchDistrict} from '../util/districtsMatching'
+
+import CutoffSlider from './CutoffSlider'
+import DistrictsDifferenceChart from './DistrictsDifferenceChart'
 
 //import { d3 } from "d3-scale-chromatic";
 
@@ -70,11 +73,14 @@ class Parties extends React.Component {
         defaultState.againstAllReached = false
         defaultState.onlyOnePartyPassed = false
 
+        defaultState.dataForChartDifference = {}
+
         defaultState.content = ''
         //const [content, setContent] = useState("");
 
         //Form2 state
-        defaultState.voteResults = ''
+        this.voteResults = []
+        this.cutoff = 0
 
         let parties = {}
         let partiesBase = {}
@@ -154,6 +160,8 @@ class Parties extends React.Component {
             }).then((resultsData) => {
 
             if(typeof(resultsData) !== undefined){
+
+                this.voteResults = resultsData
 
                 let resultsSummary = {}
 
@@ -303,9 +311,19 @@ class Parties extends React.Component {
         }        
     }
 
-
     handleContentTooltip = (content) => {
         this.setState({content: content})
+    }
+
+    handeOnDistrictClick = (geoData) => {
+        let tooltipDataBase = this.resultsDataDisctrictsBase[geoData.ADM1_RU] 
+        let tooltipData = this.resultsDataDisctricts[geoData.ADM1_RU] 
+
+        console.log('STATE handeOnDistrictClick')
+        
+        this.setState({dataForChartDifference: {'district': matchDistrictShow(matchDistrict(geoData.ADM1_RU)), 
+                                                'base': tooltipDataBase, 
+                                                'diff': tooltipData}})
     }
 
     handleClickFormTwoChart = (resultsData, resultsDataDisctricts) => {
@@ -347,6 +365,105 @@ class Parties extends React.Component {
 
         //Percents left
         this.calculateResults('parties')
+    }
+
+    setCutoff = (event, value) => {
+        // //console.log(event.target.ariaValueNow)
+        // console.log('EVENT')
+        // console.log(event)
+
+        if(this.cutoff != value){
+                
+
+            //Фильтр
+            let filteredResults = this.voteResults.filter(function(result) {
+                return result.form2_percent < value;
+            });
+
+            let resultsSummary = {}
+            let resultsSummaryDistricts = {}
+
+            //Для графика распределения
+            filteredResults.forEach(result => {
+                Object.keys(result).map((key) => {
+
+                    if (resultsSummary.hasOwnProperty(key)){
+                        resultsSummary[key] += result[key]
+                    }else{
+                        resultsSummary[key] = result[key]
+                    }            
+                })  
+
+            })         
+
+            // console.log(filteredResults)
+
+            //Для карты районов
+            Object.entries(districts).forEach(([key, value]) => {
+
+                let partySum = {}
+
+                // console.log('FILTER')
+
+                // console.log(key)
+                // console.log(value)
+
+                let filteredDistrict = filteredResults.filter(function(result) {                    
+                    return result.level_one == value;
+                });
+
+                //Суммируем по партиями
+                filteredDistrict.forEach(result => {
+                    Object.keys(result).map((keyFiltered) => {
+
+                        if(keyFiltered !== 'form2_percent' && keyFiltered !== 'level_one'){
+                            if (partySum.hasOwnProperty(keyFiltered)){
+                                partySum[keyFiltered] += result[keyFiltered]
+                            }else{
+                                partySum[keyFiltered] = result[keyFiltered]
+                            }          
+                        }  
+                    })      
+                })     
+
+                // console.log('FILTER RESULTS')
+                // console.log(partySum)
+                // console.log(filteredDistrict)
+
+                resultsSummaryDistricts[key] = partySum
+            })
+
+
+            console.log('RESULT SUMMARY')
+            console.log(resultsSummary)
+            console.log(resultsSummaryDistricts)
+
+            this.showCompareChart = true
+            const parties = {...this.state.parties}
+
+            console.log('CLICK')
+            console.log(parties)
+
+            //График распределения
+            Object.keys(resultsSummary).map((key) => {
+
+                if (parties.hasOwnProperty(matchParty([key]))){
+                    parties[matchParty([key])].voteResult = resultsSummary[key] / resultsSummary.total * 100                   
+                }  
+            })  
+
+            if (this.state.parties !== parties){
+                this.setState( {parties: parties} )
+
+                //Percents left
+                this.calculateResults('parties')
+            }
+
+            //Карта
+            //Для карты районов
+            this.resultsDataDisctricts = resultsSummaryDistricts 
+        }
+
     }
 
     sortProperties(obj, sortedBy, isNumericSort, reverse) {
@@ -530,7 +647,7 @@ class Parties extends React.Component {
                 parties[party].monopolyResidual = 0
                 parties[party].message = ''
             })             
-        }  
+        }          
 
         //Против всех
         if (parties['Против всех'].voteResult < electionsConfig.against_all_cutoff)  {
@@ -594,19 +711,23 @@ class Parties extends React.Component {
         const { classes } = this.props;
 
         return (
-            <div>                 
-  
+            <div>     
+
                 <Grid container justify="center">
                     Хотите увидеть что было бы если анулировать результаты голосования на участках с аномальным показателем по Форме2? 
                 </Grid>
 
                 <Grid container justify="center">
-                    Для этого нажмите на колонку из графика с интересующим Вас пороговым процентом
+                    Для этого установите бегунок с интересующем Вас процентом
                 </Grid>
 
                 <FormTwoChart 
                     clickOnBar={this.handleClickFormTwoChart}>
-                </FormTwoChart>                
+                </FormTwoChart>    
+
+                <Grid container justify="center">
+                    <CutoffSlider cutoffOnChange={this.setCutoff}></CutoffSlider>
+                </Grid>            
 
                 <Grid container justify="center">
                     {this.state.percentsLeft == 0
@@ -634,7 +755,7 @@ class Parties extends React.Component {
                 </Grid>
                 <Grid container justify="center">
                     <div style={{width: 1000, height: 500}}>
-                        <Map setTooltipContent={this.handleContentTooltip} />        
+                        <Map setTooltipContent={this.handleContentTooltip} onDistrictClick={this.handeOnDistrictClick} />        
                     </div>                    
                 </Grid>
 
@@ -651,98 +772,17 @@ class Parties extends React.Component {
                         
                 </ReactTooltip>
 
+
+                <DistrictsDifferenceChart chartData={this.state.dataForChartDifference} ></DistrictsDifferenceChart> 
+
+
                 {/* <Typography variant="body1">Осталось распределить: {this.state.percentsLeft}</Typography>                 */}
 
                 <b>{isAgainstAllReached ? electionsConfig.against_all_reached_message : ''}</b>
 
-                <b>{onlyOnePartyPassed ? electionsConfig.one_party_cutoff_only_message : ''}</b>
+                <b>{onlyOnePartyPassed ? electionsConfig.one_party_cutoff_only_message : ''}</b>    
+                
 
-                <List dense className={'Parties'}>
-                {electionsConfig.parties.map((value) => {
-                    const labelId = `label-${value}`;
-                    const disabled = this.state.parties[value].message ? true : false
-                    return (
-                    <Tooltip TransitionComponent={Zoom} title={disabled ? this.state.parties[value].message : "" } arrow>
-                    <ListItem key={value} style={{justifyContent: "center"}} disabled={disabled}>
-                        {disabled ? <Grid item className={classes.redLine}></Grid> : null}
-                        <Grid item>
-                            <ListItemAvatar>
-                            <Avatar
-                                //alt={`Avatar n°${value}`}
-                                src={require("./PartyLogo/" + value + ".png")}
-                                variant="square"
-                            />
-                            </ListItemAvatar>
-                        </Grid>
-                        <Grid item xs={5}>
-                            <ListItemText id={labelId} primary={value} />
-                        </Grid>
-                                                
-                        {/* <Grid style={{width: 130}}>
-                        <TextField  
-                            id={value} 
-                            value={this.state.partiesBase[value].voteResult.toFixed(2)}
-                            type ='number'                            
-                            onChange={this.voteNumberOnChange}
-                            label="Процент голосов ДО" 
-                            variant="outlined"
-                            fullWidth
-                            inputProps={{style: {fontSize: 16}}}
-                            InputLabelProps={{style: {fontSize: 16}}}
-                            />
-                            
-                        </Grid> */}
-
-                        <Grid style={{width: 110, paddingRight: 5}}>
-                        <TextField  
-                            id={value} 
-                            value={this.state.partiesBase[value].parlamentResultChairs}
-                            disabled={true}
-                            onChange={this.voteNumberOnChange}
-                            label="Мест ДО" 
-                            variant="outlined"
-                            fullWidth
-                            inputProps={{style: {fontSize: 16, color: "green", fontWeight: 'bold'}}}
-                            InputLabelProps={{style: {fontSize: 16}}}
-                            /> 
-                        </Grid>
-
-                        {/* <Grid style={{width: 130}}>
-                        <TextField  
-                            id={value} 
-                            value={this.state.parties[value].voteResult.toFixed(2)}
-                            type ='number'                            
-                            onChange={this.voteNumberOnChange}
-                            label="Процент голосов ПОСЛЕ" 
-                            variant="outlined"
-                            fullWidth
-                            inputProps={{style: {fontSize: 16}}}
-                            InputLabelProps={{style: {fontSize: 16}}}
-                            />
-                            
-                        </Grid> */}
-
-                        <Grid style={{width: 110}}>
-                        <TextField  
-                            id={value} 
-                            value={this.state.parties[value].parlamentResultChairs}
-                            disabled={true}
-                            onChange={this.voteNumberOnChange}
-                            label="Мест ПОСЛЕ" 
-                            variant="outlined"
-                            fullWidth
-                            inputProps={{style: {fontSize: 16, color: "green", fontWeight: 'bold'}}}
-                            InputLabelProps={{style: {fontSize: 16}}}
-                            /> 
-                        </Grid>
-
-                        {/* <div>{this.state.parties[value].message}</div> */}
-                    </ListItem>
-                    </Tooltip>
-                    );
-                })}
-                </List>              
-                              
             </div>
           );
         }
@@ -751,6 +791,9 @@ class Parties extends React.Component {
 //export default withStyles(styles, { withTheme: true })(Parties)
 
 const areEqual = (prevProps, nextProps) => {
+
+    console.log("MEMO")
+    console.log(nextProps)
 
     return (prevProps.parties === nextProps.parties)
     }

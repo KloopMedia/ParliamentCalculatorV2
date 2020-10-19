@@ -21,7 +21,7 @@ const rounded = num => {
   }
 };
 
-const MapChart = ({ setTooltipContent }) => {
+const MapChart = ({ setTooltipContent, onDistrictClick} ) => {
   
   return (
     <>
@@ -39,6 +39,9 @@ const MapChart = ({ setTooltipContent }) => {
                     const { ADM1_RU, Shape_Area } = geo.properties;
                     //setTooltipContent(`${ADM1_RU} — ${rounded(Shape_Area)}` + ': TEST');
                     setTooltipContent(`${ADM1_RU}`);
+                  }}
+                  onClick={() => {
+                    onDistrictClick(geo.properties)
                   }}
                   onMouseLeave={() => {
                     setTooltipContent("");
