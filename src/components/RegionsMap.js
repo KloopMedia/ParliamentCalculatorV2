@@ -24,7 +24,6 @@ const rounded = num => {
 const MapChart = ({ setTooltipContent, onDistrictClick} ) => {
   
   return (
-    <>
       <ComposableMap data-tip="" projection="geoEqualEarth"  width={1000} height={500} projectionConfig={{scale: 6000}}>
         <ZoomableGroup center={[74.5,41.2]} minZoom={1} maxZoom={1}  zoom={1}>
           <Geographies geography={geoUrl}>
@@ -109,7 +108,6 @@ const MapChart = ({ setTooltipContent, onDistrictClick} ) => {
 
         </ZoomableGroup>
       </ComposableMap>
-    </>
   );
 };
 

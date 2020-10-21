@@ -64,7 +64,7 @@ export default function CutoffSlider(props) {
   return (
     <div className={classes.root}>
       <Typography id="discrete-slider-always" gutterBottom>
-         Аномальный процент по Форме 2 (%)
+         
       </Typography>
       <ThemeProvider theme={muiTheme}>
       <Slider
