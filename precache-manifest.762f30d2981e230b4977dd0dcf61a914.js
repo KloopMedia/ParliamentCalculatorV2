@@ -1,10 +1,10 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "1352588875ce18401ab382767572970c",
+    "revision": "37f5dfae64abbffa3ffbeb28996ee5ea",
     "url": "/ParliamentCalculatorV2/index.html"
   },
   {
-    "revision": "d89d9258abb58752d48c",
+    "revision": "1ade4bb3737330aff99c",
     "url": "/ParliamentCalculatorV2/static/css/main.5f361e03.chunk.css"
   },
   {
@@ -16,15 +16,15 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/ParliamentCalculatorV2/static/js/2.054b8be5.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "d89d9258abb58752d48c",
-    "url": "/ParliamentCalculatorV2/static/js/main.3ca297f8.chunk.js"
+    "revision": "1ade4bb3737330aff99c",
+    "url": "/ParliamentCalculatorV2/static/js/main.6cb45162.chunk.js"
   },
   {
     "revision": "5321c86534b83f0e03ab",
     "url": "/ParliamentCalculatorV2/static/js/runtime-main.992f1da6.js"
   },
   {
-    "revision": "42ccabd34e43cc9f80495d75581c8096",
-    "url": "/ParliamentCalculatorV2/static/media/PARTIES_RESULTS_REACT_LEVEL_ONE.42ccabd3.csv"
+    "revision": "abe273cae3dba3af3d7801370f8fcf0f",
+    "url": "/ParliamentCalculatorV2/static/media/PARTIES_RESULTS_REACT_LEVEL_ONE_NEW.abe273ca.csv"
   }
 ]);
