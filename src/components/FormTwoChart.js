@@ -31,13 +31,13 @@ class FormTwoChart extends Component {
               legend: {
                 data:['volume']
               },
-              toolbox: {
-                show : true,
-                feature : {
-                  dataView : {show: true, readOnly: false},
-                  magicType : {show: true, type: ['line', 'bar']},
-                }
-              },
+              // toolbox: {
+              //   show : true,
+              //   feature : {
+              //     dataView : {show: true, readOnly: false},
+              //     magicType : {show: true, type: ['line', 'bar']},
+              //   }
+              // },
               calculable : true,
               xAxis : [
                 {
@@ -66,7 +66,7 @@ class FormTwoChart extends Component {
     }
 
     loadElectionsResultsData = () => {
-        d3.csv(require('../data/PARTIES_RESULTS_REACT_LEVEL_ONE.csv')).then(data => {
+        d3.csv(require('../data/PARTIES_RESULTS_REACT_LEVEL_ONE_NEW.csv')).then(data => {
             data.forEach(function(d) {
                 d.form2_percent = parseFloat(d.form2_percent)
                 d.total = parseFloat(d.total)
@@ -105,7 +105,7 @@ class FormTwoChart extends Component {
                 //this.bins = EChartsStat.histogram(formTwoPercents).customData.slice(1, 12);
 
                  // set the parameters for the histogram 
-                 let histogram = d3.histogram().thresholds([0,5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115]);
+                 let histogram = d3.histogram().thresholds([0,5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100]);
                  this.bins = histogram(formTwoPercents);
                 
                 this.updateGraph()
@@ -138,19 +138,28 @@ class FormTwoChart extends Component {
         }
 
         let yData = []
+
         this.bins.forEach(binData => {
             yData.push(binData.length)
         })
+
+        let popped = yData.pop()
+        yData[yData.length-1] = yData[yData.length-1] + popped
 
         let xData = []
         this.bins.forEach(binData => {
             xData.push(binData.x0.toString() + '-' + binData.x1.toFixed(0).toString() + '%')
         })
 
+        xData.pop()
+
         let graphOption = {
             title : {
-                text: '',
-                subtext: ' '
+                // text: 'График распределения УИК по аномальным процентам формы 2',
+                // subtext: 'Аномальный процент по форме 2 высчитывается по формуле: % = (количество зарегистрированных по форме 2) / (количество по УИК всего)',
+                // textAlign: 'center', 
+                // textVerticalAlign: 'bottom'
+
               },
               tooltip : {
                 trigger: 'axis',
@@ -159,15 +168,15 @@ class FormTwoChart extends Component {
                 }
               },
               legend: {
-                data:['Количество УИК']
+                //data:['Количество УИК']
               },
-              toolbox: {
-                show : true,
-                feature : {
-                  dataView : {show: true, readOnly: false},
-                  magicType : {show: true, type: ['line', 'bar']},
-                }
-              },
+              // toolbox: {
+              //   show : true,
+              //   feature : {
+              //     dataView : {show: true, readOnly: false},
+              //     magicType : {show: true, type: ['line', 'bar']},
+              //   }
+              // },
               calculable : true,
               xAxis : [
                 {

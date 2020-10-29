@@ -21,11 +21,28 @@ const rounded = num => {
   }
 };
 
+const getDistrictColor = (district) => {
+  if(district == 'г.Бишкек' || district == 'г.Ош'){
+    return '#A52A2A'
+  }else{
+    return '#DEB887'
+  }
+}
+
+const handleMoveStart = (currentCenter) => {
+  console.log("New center: ", currentCenter)
+}
+
+const handleMoveEnd = (newCenter) => {
+  console.log("New center: ", newCenter)
+}
+
 const MapChart = ({ setTooltipContent, onDistrictClick} ) => {
   
   return (
       <ComposableMap data-tip="" projection="geoEqualEarth"  width={1000} height={500} projectionConfig={{scale: 6000}}>
-        <ZoomableGroup center={[74.5,41.2]} minZoom={1} maxZoom={1}  zoom={1}>
+        <ZoomableGroup center={[74.5,41.2]} minZoom={1} maxZoom={1}  zoom={1}>  
+        {/* onMoveStart={handleMoveStart} onMoveEnd={handleMoveEnd}> */}
           <Geographies geography={geoUrl}>
             {({ geographies }) =>
               geographies.map(geo => (
@@ -47,7 +64,7 @@ const MapChart = ({ setTooltipContent, onDistrictClick} ) => {
                   }}
                   style={{
                     default: {
-                      fill: "#DEB887",
+                      fill: getDistrictColor(geo.properties.ADM1_RU),
                       outline: "none"
                     },
                     hover: {

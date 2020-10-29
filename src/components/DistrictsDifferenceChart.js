@@ -11,6 +11,7 @@ const DistrictsDifferenceChart = (props) =>  {
     }
 
     console.log('DRAW DIFF')
+    console.log(props)
     console.log(typeof(props.chartData.diff) === undefined)
 
     let labelRight = {position: 'right'}
@@ -55,6 +56,9 @@ const DistrictsDifferenceChart = (props) =>  {
         
     })
 
+    console.log(xData)
+    console.log(yData)
+
     let option = {
         title: {
             text: props.chartData.district,
@@ -77,7 +81,9 @@ const DistrictsDifferenceChart = (props) =>  {
                 lineStyle: {
                     type: 'dashed'
                 }
-            }
+            },
+            // min: -5,
+            // max: 5
         },
         yAxis: {
             type: 'category',

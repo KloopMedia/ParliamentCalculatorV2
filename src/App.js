@@ -20,6 +20,9 @@ import {districts, matchDistrictShow, matchDistrict} from './util/districtsMatch
 
 import TextField from '@material-ui/core/TextField';
 
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Switch from '@material-ui/core/Switch';
+
 import * as d3 from 'd3'
 
 class App extends React.Component {
@@ -84,6 +87,8 @@ class App extends React.Component {
     this.UIKtotal = 0
     this.UIKleft = 0
     this.UIKcutted = 0
+
+    this.switchLeftUIKToAnalyze = false
   }    
 
   componentDidMount() { 
@@ -95,7 +100,7 @@ class App extends React.Component {
   }
 
   loadElectionsResultsData = () => {
-    d3.csv(require('./data/PARTIES_RESULTS_REACT_LEVEL_ONE.csv')).then(data => {
+    d3.csv(require('./data/PARTIES_RESULTS_REACT_LEVEL_ONE_NEW.csv')).then(data => {
         data.forEach(function(d) {
             d.form2_percent = parseFloat(d.form2_percent)
             d.total = parseFloat(d.total)
@@ -144,6 +149,9 @@ class App extends React.Component {
                 })  
 
             }) 
+
+            console.log('CHECK TOTAL')
+            console.log(resultsSummary)
             
             const parties = {...this.state.partiesBase}
 
@@ -151,10 +159,12 @@ class App extends React.Component {
 
                 if (parties.hasOwnProperty(matchParty([key]))){
 
-                    parties[matchParty([key])].voteResult = resultsSummary[key] / resultsSummary.total * 100   
+                    parties[matchParty([key])].voteResult = resultsSummary[key] / resultsSummary.total * (100 - electionsConfig.damagedBulletin)  
                     
                 }  
             })  
+
+            console.log(parties)
 
             this.setState( {partiesBase: parties} )
 
@@ -281,109 +291,135 @@ setCutoff = (event, value) => {
     // console.log('EVENT')
     // console.log(event)
 
-    if(this.cutoff != value){
-            
-
-        //Фильтр
-        let filteredResults = this.voteResults.filter(function(result) {
-            return result.form2_percent < value;
-        });
-
-        this.UIKleft = filteredResults.length
-        this.UIKcutted = this.UIKtotal - this.UIKleft
-
-        console.log("TEST UIK")
-        console.log(this.UIKtotal)
-        console.log(this.UIKleft)
-        console.log(this.UIKcutted)
-
-        let resultsSummary = {}
-        let resultsSummaryDistricts = {}
-
-        //Для графика распределения
-        filteredResults.forEach(result => {
-            Object.keys(result).map((key) => {
-
-                if (resultsSummary.hasOwnProperty(key)){
-                    resultsSummary[key] += result[key]
-                }else{
-                    resultsSummary[key] = result[key]
-                }            
-            })  
-
-        })         
-
-        // console.log(filteredResults)
-
-        //Для карты районов
-        Object.entries(districts).forEach(([key, value]) => {
-
-            let partySum = {}
-
-            // console.log('FILTER')
-
-            // console.log(key)
-            // console.log(value)
-
-            let filteredDistrict = filteredResults.filter(function(result) {                    
-                return result.level_one == value;
-            });
-
-            //Суммируем по партиями
-            filteredDistrict.forEach(result => {
-                Object.keys(result).map((keyFiltered) => {
-
-                    if(keyFiltered !== 'form2_percent' && keyFiltered !== 'level_one'){
-                        if (partySum.hasOwnProperty(keyFiltered)){
-                            partySum[keyFiltered] += result[keyFiltered]
-                        }else{
-                            partySum[keyFiltered] = result[keyFiltered]
-                        }          
-                    }  
-                })      
-            })     
-
-            // console.log('FILTER RESULTS')
-            // console.log(partySum)
-            // console.log(filteredDistrict)
-
-            resultsSummaryDistricts[key] = partySum
-        })
-
-
-        // console.log('RESULT SUMMARY')
-        // console.log(resultsSummary)
-        // console.log(resultsSummaryDistricts)
-
-        this.showCompareChart = true
-        const parties = {...this.state.parties}
-
-        // console.log('CLICK')
-        // console.log(parties)
-
-        //График распределения
-        Object.keys(resultsSummary).map((key) => {
-
-            if (parties.hasOwnProperty(matchParty([key]))){
-                parties[matchParty([key])].voteResult = resultsSummary[key] / resultsSummary.total * 100                   
-            }  
-        })  
-
-        if (this.state.parties !== parties){
-            this.setState( {parties: parties} )
-
-            //Percents left
-            this.calculateResults('parties')
-        }
-
-        //Карта
-        //Для карты районов
-        this.resultsDataDisctricts = resultsSummaryDistricts 
-
-        //Разница
-        this.handeOnDistrictClick({ADM1_RU: this.state.content})
+    console.log("CUT CUT CUT")
+    console.log(this.cutoff)
+    console.log(value)
+    if(this.cutoff != value){    
+        this.cutoff = value
+        this.updateBasesInfo()       
     }
 
+}
+
+updateBasesInfo = () => {
+    let switchLeftUIKToAnalyze = this.switchLeftUIKToAnalyze
+    let cutoff = this.cutoff
+
+    //Фильтр
+    let filteredResults = this.voteResults.filter(function(result) {
+
+        if(switchLeftUIKToAnalyze){
+            return Number(result.form2_percent) > cutoff;
+        }else{
+            return Number(result.form2_percent) < cutoff;
+        }
+        
+    });
+
+    console.log('TEST')
+    console.log(filteredResults)
+
+    if(switchLeftUIKToAnalyze){
+        this.UIKcutted = filteredResults.length
+        this.UIKleft = this.UIKtotal - this.UIKcutted
+
+
+    }else{
+        this.UIKleft = filteredResults.length
+        this.UIKcutted = this.UIKtotal - this.UIKleft
+    }
+    
+
+    console.log("TEST UIK")
+    console.log(this.UIKtotal)
+    console.log(this.UIKleft)
+    console.log(this.UIKcutted)
+
+    let resultsSummary = {}
+    let resultsSummaryDistricts = {}
+
+    //Для графика распределения
+    filteredResults.forEach(result => {
+        Object.keys(result).map((key) => {
+
+            if (resultsSummary.hasOwnProperty(key)){
+                resultsSummary[key] += result[key]
+            }else{
+                resultsSummary[key] = result[key]
+            }            
+        })  
+
+    })         
+
+    // console.log(filteredResults)
+
+    //Для карты районов
+    Object.entries(districts).forEach(([key, value]) => {
+
+        let partySum = {}
+
+        // console.log('FILTER')
+
+        // console.log(key)
+        // console.log(value)
+
+        let filteredDistrict = filteredResults.filter(function(result) {                    
+            return result.level_one == value;
+        });
+
+        //Суммируем по партиями
+        filteredDistrict.forEach(result => {
+            Object.keys(result).map((keyFiltered) => {
+
+                if(keyFiltered !== 'form2_percent' && keyFiltered !== 'level_one'){
+                    if (partySum.hasOwnProperty(keyFiltered)){
+                        partySum[keyFiltered] += result[keyFiltered]
+                    }else{
+                        partySum[keyFiltered] = result[keyFiltered]
+                    }          
+                }  
+            })      
+        })     
+
+        // console.log('FILTER RESULTS')
+        // console.log(partySum)
+        // console.log(filteredDistrict)
+
+        resultsSummaryDistricts[key] = partySum
+    })
+
+
+    // console.log('RESULT SUMMARY')
+    // console.log(resultsSummary)
+    // console.log(resultsSummaryDistricts)
+
+    this.showCompareChart = true
+    const parties = {...this.state.parties}
+
+    // console.log('CLICK')
+    // console.log(parties)
+
+    //График распределения
+    Object.keys(resultsSummary).map((key) => {
+
+        if (parties.hasOwnProperty(matchParty([key]))){
+            parties[matchParty([key])].voteResult = resultsSummary[key] / resultsSummary.total * (100 - electionsConfig.damagedBulletin)                   
+        }  
+    })  
+
+    if (this.state.parties !== parties){
+        this.setState( {parties: parties} )
+
+        //Percents left
+        this.calculateResults('parties')
+    }
+
+    //Карта
+    //Для карты районов
+    this.resultsDataDisctricts = resultsSummaryDistricts 
+
+    //Разница
+    this.handeOnDistrictClick({ADM1_RU: this.state.content})
 }
 
 sortProperties(obj, sortedBy, isNumericSort, reverse) {
@@ -431,10 +467,13 @@ calculateResults = (partiesSet) => {
 
      })     
      
-    let percentsLeft = Number(100 - percentSum).toFixed(2)
+    let percentsLeft = Number(100 - percentSum).toFixed(2) - electionsConfig.damagedBulletin
     this.setState( {percentsLeft: percentsLeft} )
 
     const parties = {...stateParties} 
+
+    console.log('CHECK PERCENTS LEFT')
+    console.log(percentsLeft)
 
     if (percentsLeft == 0) {                     
 
@@ -601,6 +640,11 @@ calculateResults = (partiesSet) => {
                                             'diff': tooltipData}})
   }
 
+  handleChange = (event) => { 
+    this[event.target.name] = event.target.checked
+    this.updateBasesInfo() 
+  };
+
   render () {
 
     console.log('RENDER APP')
@@ -610,65 +654,84 @@ calculateResults = (partiesSet) => {
 
         {/* <Typography variant="h6">{electionsConfig.distribute_all_votes_message}</Typography> */}
 
+        <Grid container justify="center">
+            <h3>График распределения УИК по аномальным процентам формы 2</h3>
+        </Grid>
+
+        <Grid container justify="center">
+        Аномальный процент по форме 2 высчитывается по формуле: % = (количество зарегистрированных по форме 2) / (количество по УИК всего)
+        </Grid>
+
         <FormTwoChart></FormTwoChart>    
 
         <Grid container justify="center">
-            Хотите увидеть что было бы если анулировать результаты голосования на участках с аномальным показателем по Форме2? 
+            Хотите увидеть что было бы если аннулировать результаты голосования на участках с аномальным показателем по Форме2? 
         </Grid>
 
         <Grid container justify="center">
             Для этого установите бегунок с интересующем Вас процентом
         </Grid>     
 
-        <Grid container justify="center">
+        <Grid container justify="center" style={{padding: '40px'}}>
             <CutoffSlider cutoffOnChange={this.setCutoff}></CutoffSlider>
         </Grid>
 
-        <div style={{padding: '20px'}} >
-          <Grid container justify="center">          
-            <Grid style={{width: 120, paddingRight: 5}}>
-              <TextField  
-                  id='UIK total'
-                  value={this.UIKtotal}
-                  disabled={true}
-                  type ='number'                            
-                  label="УИК всего" 
-                  variant="outlined"
-                  fullWidth
-                  inputProps={{style: {fontSize: 14, color: "black", fontWeight: 'bold'}}}
-                  InputLabelProps={{style: {fontSize: 14}}}
-                  />                
+        <Grid container justify="center">          
+            <Grid style={{width: 90, padding:3}}>
+                <TextField  
+                    id='UIK total'
+                    value={this.UIKtotal}
+                    disabled={true}
+                    type ='number'                            
+                    label="УИК всего" 
+                    variant="outlined"
+                    fullWidth
+                    inputProps={{style: {fontSize: 14, color: "black", fontWeight: 'bold'}}}
+                    InputLabelProps={{style: {fontSize: 14}}}
+                    />                
             </Grid>
 
-            <Grid style={{width: 120, paddingRight: 5}}>
-              <TextField  
-                  id='UIK cutted'
-                  value={this.UIKcutted}
-                  disabled={true}
-                  type ='number'                            
-                  label="УИК анулированных" 
-                  variant="outlined"
-                  fullWidth
-                  inputProps={{style: {fontSize: 14, color: "black", fontWeight: 'bold'}}}
-                  InputLabelProps={{style: {fontSize: 14}}}
-                  />                
+            <Grid style={{width: 90, padding:3}}>
+                <TextField  
+                    id='UIK cutted'
+                    value={this.UIKcutted}
+                    disabled={true}
+                    type ='number'                            
+                    label="УИК аннул." 
+                    variant="outlined"
+                    fullWidth
+                    inputProps={{style: {fontSize: 14, color: "black", fontWeight: 'bold'}}}
+                    InputLabelProps={{style: {fontSize: 14}}}
+                    />                
             </Grid>
 
-            <Grid style={{width: 120, paddingRight: 5}}>
-              <TextField  
-                  id='UIK left'
-                  value={this.UIKleft}
-                  disabled={true}
-                  type ='number'                            
-                  label="УИК осталось" 
-                  variant="outlined"
-                  fullWidth
-                  inputProps={{style: {fontSize: 14, color: "red", fontWeight: 'bold'}}}
-                  InputLabelProps={{style: {fontSize: 14}}}
-                  />                
+            <Grid style={{width: 90, padding:3}}>
+                <TextField  
+                    id='UIK left'
+                    value={this.UIKleft}
+                    disabled={true}
+                    type ='number'                            
+                    label="УИК ост." 
+                    variant="outlined"
+                    fullWidth
+                    inputProps={{style: {fontSize: 14, color: "red", fontWeight: 'bold'}}}
+                    InputLabelProps={{style: {fontSize: 14}}}
+                    />                
             </Grid>                  
-          </Grid>
-        </div> 
+        </Grid>
+
+
+        <FormControlLabel
+            control={
+            <Switch
+                checked={this.switchLeftUIKToAnalyze}
+                onChange={this.handleChange}
+                name="switchLeftUIKToAnalyze"
+                color="Secondary"
+            />
+            }
+            label="Выбрать для анализа только анулированные УИК"
+        /> 
 
         <Parties
           parties = {this.state.parties}
@@ -679,14 +742,19 @@ calculateResults = (partiesSet) => {
         >  
         </Parties>
 
+        <DistrictsDifferenceChart chartData={this.state.dataForChartDifference} ></DistrictsDifferenceChart>
+
         <Grid container justify="center">
-              Для просмотра распределения процентов по областям - наведите на область                
-        </Grid>
+              Для просмотра распределения процентов по областям - наведите на область (нажмите на область для отображения таблицы разности в процентах)                
+        </Grid>       
+        
+        
         <Grid container justify="center">
             <div style={{width: 1000, height: '100%'}}>
                 <Map setTooltipContent={this.handleContentTooltip} onDistrictClick={this.handeOnDistrictClick} />        
             </div>                    
         </Grid>
+
 
         <ReactTooltip
                 type='error'
@@ -700,8 +768,7 @@ calculateResults = (partiesSet) => {
                 </div>   
                 
         </ReactTooltip>
-
-        <DistrictsDifferenceChart chartData={this.state.dataForChartDifference} ></DistrictsDifferenceChart> 	
+ 	
       </div>
     );
   }

@@ -2,6 +2,7 @@ const electionsConfig = {
     cutoff: 7,
     totalChairs: 120,
     maxChairsForParty: 65,
+    damagedBulletin: 1.5,
     parties: ["Биримдик", 
               "Мекенчил", 
               "Ыйман Нуру", 
