@@ -1,23 +1,23 @@
 {
   "files": {
     "main.css": "/ParliamentCalculatorV2/static/css/main.5f361e03.chunk.css",
-    "main.js": "/ParliamentCalculatorV2/static/js/main.af1747f5.chunk.js",
-    "main.js.map": "/ParliamentCalculatorV2/static/js/main.af1747f5.chunk.js.map",
+    "main.js": "/ParliamentCalculatorV2/static/js/main.0c5a4c6c.chunk.js",
+    "main.js.map": "/ParliamentCalculatorV2/static/js/main.0c5a4c6c.chunk.js.map",
     "runtime-main.js": "/ParliamentCalculatorV2/static/js/runtime-main.992f1da6.js",
     "runtime-main.js.map": "/ParliamentCalculatorV2/static/js/runtime-main.992f1da6.js.map",
-    "static/js/2.054b8be5.chunk.js": "/ParliamentCalculatorV2/static/js/2.054b8be5.chunk.js",
-    "static/js/2.054b8be5.chunk.js.map": "/ParliamentCalculatorV2/static/js/2.054b8be5.chunk.js.map",
+    "static/js/2.dd985014.chunk.js": "/ParliamentCalculatorV2/static/js/2.dd985014.chunk.js",
+    "static/js/2.dd985014.chunk.js.map": "/ParliamentCalculatorV2/static/js/2.dd985014.chunk.js.map",
     "index.html": "/ParliamentCalculatorV2/index.html",
-    "precache-manifest.a8fc18b8cda02ffce6bb84e4d3dd6691.js": "/ParliamentCalculatorV2/precache-manifest.a8fc18b8cda02ffce6bb84e4d3dd6691.js",
+    "precache-manifest.0ec40de173300a4fafd0da9d9668a6eb.js": "/ParliamentCalculatorV2/precache-manifest.0ec40de173300a4fafd0da9d9668a6eb.js",
     "service-worker.js": "/ParliamentCalculatorV2/service-worker.js",
     "static/css/main.5f361e03.chunk.css.map": "/ParliamentCalculatorV2/static/css/main.5f361e03.chunk.css.map",
-    "static/js/2.054b8be5.chunk.js.LICENSE.txt": "/ParliamentCalculatorV2/static/js/2.054b8be5.chunk.js.LICENSE.txt",
+    "static/js/2.dd985014.chunk.js.LICENSE.txt": "/ParliamentCalculatorV2/static/js/2.dd985014.chunk.js.LICENSE.txt",
     "static/media/PARTIES_RESULTS_REACT_LEVEL_ONE_NEW.csv": "/ParliamentCalculatorV2/static/media/PARTIES_RESULTS_REACT_LEVEL_ONE_NEW.abe273ca.csv"
   },
   "entrypoints": [
     "static/js/runtime-main.992f1da6.js",
-    "static/js/2.054b8be5.chunk.js",
+    "static/js/2.dd985014.chunk.js",
     "static/css/main.5f361e03.chunk.css",
-    "static/js/main.af1747f5.chunk.js"
+    "static/js/main.0c5a4c6c.chunk.js"
   ]
 }
