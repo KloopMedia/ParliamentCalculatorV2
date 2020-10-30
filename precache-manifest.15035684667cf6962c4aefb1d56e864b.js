@@ -1,10 +1,10 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "589966c560cc050832122b08cdf4e79e",
+    "revision": "e7b1f199a176bdc640d576dc6e5a9e39",
     "url": "/ParliamentCalculatorV2/index.html"
   },
   {
-    "revision": "56c34644e63ed6e91ed3",
+    "revision": "e3de677b96d03f0947c6",
     "url": "/ParliamentCalculatorV2/static/css/main.5f361e03.chunk.css"
   },
   {
@@ -16,8 +16,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/ParliamentCalculatorV2/static/js/2.dd985014.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "56c34644e63ed6e91ed3",
-    "url": "/ParliamentCalculatorV2/static/js/main.0c5a4c6c.chunk.js"
+    "revision": "e3de677b96d03f0947c6",
+    "url": "/ParliamentCalculatorV2/static/js/main.105376bc.chunk.js"
   },
   {
     "revision": "5321c86534b83f0e03ab",
