@@ -76,7 +76,7 @@ export default function CutoffSlider(props) {
         marks={marks}
         valueLabelDisplay="on"
         min={0}
-        max={115}
+        max={100}
       />
       </ThemeProvider>
     </div>

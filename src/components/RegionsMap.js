@@ -11,16 +11,6 @@ const geoUrl =
   //"https://raw.githubusercontent.com/zcreativelabs/react-simple-maps/master/topojson-maps/world-110m.json";
   "https://raw.githubusercontent.com/Xakim1c/parliament-calculator-v2/main/src/data/kg_regions_topo.json"
 
-const rounded = num => {
-  if (num > 1000000000) {
-    return Math.round(num / 100000000) / 10 + "Bn";
-  } else if (num > 1000000) {
-    return Math.round(num / 100000) / 10 + "M";
-  } else {
-    return Math.round(num / 100) / 10 + "K";
-  }
-};
-
 const getDistrictColor = (district) => {
   if(district == 'г.Бишкек' || district == 'г.Ош'){
     return '#A52A2A'
@@ -40,8 +30,9 @@ const handleMoveEnd = (newCenter) => {
 const MapChart = ({ setTooltipContent, onDistrictClick} ) => {
   
   return (
-      <ComposableMap data-tip="" projection="geoEqualEarth"  width={1000} height={500} projectionConfig={{scale: 6000}}>
-        <ZoomableGroup center={[74.5,41.2]} minZoom={1} maxZoom={1}  zoom={1}>  
+      <ComposableMap data-tip="" projection="geoEqualEarth"  width={1000} height={500} projectionConfig={{center: [74.5,41.2],
+        scale: 6000}}>
+        {/* <ZoomableGroup center={[74.5,41.2]} minZoom={1} maxZoom={1}  zoom={1}>   */}
         {/* onMoveStart={handleMoveStart} onMoveEnd={handleMoveEnd}> */}
           <Geographies geography={geoUrl}>
             {({ geographies }) =>
@@ -123,7 +114,7 @@ const MapChart = ({ setTooltipContent, onDistrictClick} ) => {
             </text>
           </Marker>
 
-        </ZoomableGroup>
+        {/* </ZoomableGroup> */}
       </ComposableMap>
   );
 };

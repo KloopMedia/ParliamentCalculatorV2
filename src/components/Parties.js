@@ -17,7 +17,7 @@ const Parties = (props) => {
     console.log(props.partiesBase)
 
     return (
-        <div>                            
+        <div>                             
 
             <Grid container justify="center">
                 <ParlamentChart 

@@ -49,6 +49,7 @@ const generateChartData = (chartData, title) => {
 }
 
 const ParlamentChart = (props) => <HighchartsReact
+  containerProps={{ style: { width: "100%", height: '100%' } }}
   highcharts={Highcharts}
   constructorType={'chart'}
   options={generateChartData(props.chartData, props.title)}
